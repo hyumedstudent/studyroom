@@ -83,6 +83,19 @@ python -m pytest
 - **예약 관리**: 기간·방·학번 필터, 취소 내역(취소 시각·취소자) 조회, CSV 내려받기
 - 스터디룸을 비활성화할 때 예정된 예약을 함께 취소할 수 있습니다.
 
+## 앱이 잠들지 않게 하기 (keep-alive)
+
+Streamlit Community Cloud 무료 앱은 약 12시간 접속이 없으면 잠듭니다.
+`.github/workflows/keep-alive.yml`이 6시간마다 실제 브라우저로 앱에 접속하고, 잠들어 있으면 깨웁니다.
+
+1. GitHub 저장소 → **Settings → Secrets and variables → Actions → Variables 탭 → New repository variable**
+2. Name: `STREAMLIT_APP_URL`, Value: 앱 주소 (예: `https://xxxx.streamlit.app`)
+3. **Actions** 탭 → *Keep Streamlit app awake* → **Run workflow**로 한 번 실행해 초록색 체크가 뜨는지 확인
+
+- 앱 화면을 확인하지 못하면 실행이 빨간색(실패)으로 표시되고, GitHub이 저장소 소유자에게 메일을 보냅니다. Supabase 연결 오류 같은 장애를 알아채는 용도로도 쓸 수 있습니다.
+- 공개 저장소에 60일 동안 커밋이 없으면 GitHub이 예약 실행을 자동으로 끕니다. 알림 메일이 오면 Actions 탭에서 다시 켜세요.
+- 이 기능은 Streamlit 앱만 깨워 둡니다. Supabase 무료 플랜의 일시정지(약 7일 미사용)는 막지 못합니다.
+
 ## 보안
 
 - 비밀번호는 Werkzeug 해시로 저장되며, 예약 중복은 DB 제약(exclusion constraint)과 RPC로 차단합니다.
