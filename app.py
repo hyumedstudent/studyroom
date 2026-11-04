@@ -18,6 +18,8 @@ from studyroom.views import account, admin, booking, mine
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
 logger = logging.getLogger("studyroom")
 
+DEFAULT_ANNOUNCEMENT = "제2의학관 스터디룸을 간편하게 예약하세요."
+
 st.set_page_config(
     page_title="제2의학관 스터디룸 예약",
     page_icon="📚",
@@ -26,10 +28,10 @@ st.set_page_config(
 )
 
 
-def login_screen(setup_warning: str | None) -> None:
+def login_screen(setup_warning: str | None, announcement: str) -> None:
     left, center, right = st.columns([1, 1.25, 1])
     with center:
-        hero("제2의학관 스터디룸을 간편하게 예약하세요.")
+        hero(announcement)
         if setup_warning:
             st.warning(setup_warning)
         notice = st.session_state.pop("login_notice", None)
@@ -69,6 +71,9 @@ def main() -> None:
     apply_styles()
     try:
         setup_warning = auth.bootstrap()
+        # 공지는 30초 캐시라 방문할 때마다 DB를 주기적으로 조회한다. keep-alive 접속이
+        # Supabase 무료 프로젝트의 미사용 일시정지를 막고, DB 장애도 이 화면에서 드러난다.
+        announcement = db.setting("announcement") or DEFAULT_ANNOUNCEMENT
         auth.restore_session()
         user = auth.current_user()
     except Exception:
@@ -80,7 +85,7 @@ def main() -> None:
     auth.apply_cookie_action()
 
     if not user:
-        login_screen(setup_warning)
+        login_screen(setup_warning, announcement)
         footer()
         return
 
@@ -90,7 +95,7 @@ def main() -> None:
         footer()
         return
 
-    hero(db.setting("announcement") or "스터디룸 예약 시스템에 오신 것을 환영합니다.")
+    hero(announcement)
     tab_names = ["예약", "내 예약", "계정"] + (["관리자"] if user.get("is_admin") else [])
     tabs = st.tabs(tab_names)
     with tabs[0]:
