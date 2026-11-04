@@ -7,7 +7,6 @@ import secrets
 from datetime import timedelta
 from io import BytesIO
 
-import pandas as pd
 import streamlit as st
 from werkzeug.security import generate_password_hash
 
@@ -193,6 +192,8 @@ def admin_rooms(actor: dict) -> None:
 
 def import_roster(file, overwrite: bool) -> tuple[int, int, int]:
     """(신규, 갱신, 짧은 비밀번호 수). 기존 사용자의 활성 상태는 바꾸지 않는다."""
+    import pandas as pd  # 무거운 라이브러리라 관리자 기능에서만 불러온다(학생 첫 로딩 단축)
+
     df = pd.read_excel(BytesIO(file.getvalue()), dtype=str)
     entries = parse_roster(df.to_dict("records"), list(df.columns))
     if not entries:
@@ -425,6 +426,8 @@ def admin_reservations(actor: dict) -> None:
     if not rows:
         st.info("조건에 맞는 예약이 없습니다.")
         return
+
+    import pandas as pd  # 위와 같은 이유로 지연 로딩
 
     df = pd.DataFrame([
         {

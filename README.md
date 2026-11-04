@@ -83,10 +83,27 @@ python -m pytest
 - **예약 관리**: 기간·방·학번 필터, 취소 내역(취소 시각·취소자) 조회, CSV 내려받기
 - 스터디룸을 비활성화할 때 예정된 예약을 함께 취소할 수 있습니다.
 
+## 학생용 바로가기 페이지 (GitHub Pages)
+
+일부 환경(카카오톡 등 앱 안의 브라우저, 병원·학교 와이파이, VPN·광고 차단)에서는 Streamlit 앱이 로딩 화면에서 멈출 수 있습니다.
+학생들에게는 앱 주소 대신 **바로가기 페이지 주소**를 공유하세요. 이 페이지는 어디서든 바로 열리고, 다음을 처리합니다.
+
+- 일반 브라우저: 앱으로 자동 이동합니다. 뒤로 가기로 돌아오면 해결 방법을 보여 줍니다.
+- 카카오톡: 외부 브라우저로 다시 엽니다. LINE: 외부 브라우저 열기 옵션을 붙입니다. 그 밖의 안드로이드 인앱 브라우저: "Chrome으로 열기" 버튼을 보여 줍니다.
+- 대체 링크(앱 본체 주소 `/~/+/`), 링크 복사, "와이파이 끄고 LTE로" 같은 안내를 함께 보여 줍니다.
+
+설정 (처음 한 번)
+1. 저장소 **Settings → Pages → Build and deployment → Source**를 **GitHub Actions**로 바꿉니다.
+2. Variables에 `STREAMLIT_APP_URL`이 설정돼 있는지 확인합니다(keep-alive와 같은 값).
+3. **Actions → Deploy landing page → Run workflow**를 실행합니다.
+4. 배포된 주소 `https://<GitHub 계정>.github.io/studyroom/`를 학생들에게 공유합니다.
+
+앱 주소가 바뀌면 3번을 다시 실행하세요.
+
 ## 앱이 잠들지 않게 하기 (keep-alive)와 장애 알림
 
 Streamlit Community Cloud 무료 앱은 약 12시간 접속이 없으면 잠듭니다.
-`.github/workflows/keep-alive.yml`이 6시간마다 실제 브라우저로 앱에 접속하고, 잠들어 있으면 깨웁니다.
+`.github/workflows/keep-alive.yml`이 3시간마다 실제 브라우저로 앱에 접속하고, 잠들어 있으면 깨웁니다.
 로그인 화면은 관리자 공지를 DB에서 읽으므로, 이 접속은 Supabase에도 요청을 보냅니다.
 
 ### 기본 설정
