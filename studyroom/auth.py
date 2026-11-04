@@ -21,7 +21,7 @@ LEGACY_TEST_USER = "0"
 SESSION_LOCK_SECONDS = 30
 
 
-@st.cache_resource(show_spinner=False)
+@st.cache_resource(show_spinner="서버를 준비하는 중입니다… 한동안 접속이 없었다면 최대 1분 정도 걸릴 수 있어요.")
 def bootstrap() -> str | None:
     """프로세스당 한 번 실행. 초기 관리자를 준비하고 예전 기본 계정을 정리한다.
 

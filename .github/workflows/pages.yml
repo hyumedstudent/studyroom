@@ -1,0 +1,40 @@
+name: Deploy landing page
+
+# 학생들에게 공유할 안내 페이지(https://<계정>.github.io/studyroom/)를 GitHub Pages 로 배포한다.
+# 처음 한 번: Settings → Pages → Build and deployment → Source 를 "GitHub Actions" 로 바꾼 뒤 Run workflow.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "landing/**"
+      - "scripts/build_landing.py"
+      - ".github/workflows/pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build landing page
+        env:
+          APP_URL: ${{ vars.STREAMLIT_APP_URL }}
+        run: python3 scripts/build_landing.py
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - id: deployment
+        uses: actions/deploy-pages@v4

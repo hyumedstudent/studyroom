@@ -4,3 +4,6 @@ primaryColor = "#0E4A84"
 [server]
 # 엑셀 명단 업로드 용량 제한 (MB)
 maxUploadSize = 10
+# 일부 병원·학교 와이파이나 회사 프록시는 조용한 WebSocket 연결을 중간에 끊는다.
+# 20초마다 연결 확인 신호를 보내 끊김과 '연결 중…' 반복을 줄인다.
+websocketPingInterval = 20

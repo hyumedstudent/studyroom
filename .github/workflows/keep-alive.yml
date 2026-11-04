@@ -1,12 +1,12 @@
 name: Keep Streamlit app awake
 
 # Streamlit Community Cloud 무료 앱은 약 12시간 접속이 없으면 잠든다.
-# 6시간마다 실제 브라우저로 접속해 깨어 있게 유지한다. (cron 은 UTC 기준)
+# 3시간마다 실제 브라우저로 접속해 깨어 있게 유지한다. (cron 은 UTC 기준)
 # 앱 화면을 확인하지 못하면 장애 이슈를 열고(A) 메일을 보내며(B),
 # 다시 정상이 되면 이슈를 닫고 복구 메일을 보낸다. 장애가 이어지는 동안에는 다시 알리지 않는다.
 on:
   schedule:
-    - cron: "17 */6 * * *"
+    - cron: "17 */3 * * *"
   workflow_dispatch:
 
 permissions:
