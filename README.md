@@ -83,19 +83,36 @@ python -m pytest
 - **예약 관리**: 기간·방·학번 필터, 취소 내역(취소 시각·취소자) 조회, CSV 내려받기
 - 스터디룸을 비활성화할 때 예정된 예약을 함께 취소할 수 있습니다.
 
-## 앱이 잠들지 않게 하기 (keep-alive)
+## 앱이 잠들지 않게 하기 (keep-alive)와 장애 알림
 
 Streamlit Community Cloud 무료 앱은 약 12시간 접속이 없으면 잠듭니다.
 `.github/workflows/keep-alive.yml`이 6시간마다 실제 브라우저로 앱에 접속하고, 잠들어 있으면 깨웁니다.
+로그인 화면은 관리자 공지를 DB에서 읽으므로, 이 접속은 Supabase에도 요청을 보냅니다.
 
+### 기본 설정
 1. GitHub 저장소 → **Settings → Secrets and variables → Actions → Variables 탭 → New repository variable**
 2. Name: `STREAMLIT_APP_URL`, Value: 앱 주소 (예: `https://xxxx.streamlit.app`)
 3. **Actions** 탭 → *Keep Streamlit app awake* → **Run workflow**로 한 번 실행해 초록색 체크가 뜨는지 확인
 
-- 앱 화면을 확인하지 못하면 실행이 빨간색(실패)으로 표시되고, GitHub이 저장소 소유자에게 메일을 보냅니다. Supabase 연결 오류 같은 장애를 알아채는 용도로도 쓸 수 있습니다.
-- 공개 저장소에 60일 동안 커밋이 없으면 GitHub이 예약 실행을 자동으로 끕니다. 알림 메일이 오면 Actions 탭에서 다시 켜세요.
-- 로그인 화면은 관리자 공지를 DB에서 읽으므로, 이 접속은 Supabase에도 요청을 보냅니다. 무료 플랜의 미사용 일시정지(약 7일)를 줄이는 데 도움이 되지만, Supabase가 정지를 판단하는 정확한 기준은 공개돼 있지 않으니 확실하게 막으려면 Pro 플랜을 쓰세요.
+### 장애 알림
+앱 화면을 확인하지 못하면 **장애가 시작될 때 한 번**, **복구될 때 한 번** 알립니다. 장애가 이어지는 동안에는 다시 알리지 않습니다.
+
+**A. GitHub 이슈 (추가 설정 거의 없음)**
+- 실패하면 `🚨 스터디룸 앱 장애 (자동 감지)` 이슈가 열리고, 정상으로 돌아오면 자동으로 닫힙니다.
+- 저장소를 Watch하는 계정의 GitHub 이메일로 알림이 갑니다. 알림을 받을 계정(학생회, 협업자)에서 저장소 오른쪽 위 **Watch → All Activity**를 선택하세요.
+- 저장소 Settings → General → Features에서 **Issues**가 켜져 있어야 합니다.
+
+**B. Gmail 직접 발송 (선택)**
+1. 보내는 Gmail(예: 학생회 메일)에서 **2단계 인증**을 켜고, Google 계정 → 보안 → **앱 비밀번호**를 만듭니다(16자리).
+2. 저장소 Settings → Secrets and variables → Actions
+   - **Secrets 탭**: `MAIL_USERNAME` = 보내는 Gmail 주소, `MAIL_APP_PASSWORD` = 앱 비밀번호
+   - **Variables 탭**: `ALERT_EMAILS` = 받는 주소들을 쉼표로 구분 (예: `council@gmail.com, me@gmail.com`)
+3. 두 시크릿이 없으면 메일 단계는 건너뛰고 A만 동작합니다.
+
+### 참고
 - 실패하면 Actions 로그에 열린 주소, 페이지 제목, 화면 글자 일부가 남고, 스크린샷이 artifact로 올라갑니다.
+- 공개 저장소에 60일 동안 커밋이 없으면 GitHub이 예약 실행을 자동으로 끕니다. 알림 메일이 오면 Actions 탭에서 다시 켜세요.
+- 이 접속이 Supabase 무료 플랜의 미사용 일시정지(약 7일)를 줄이는 데 도움이 되지만, Supabase가 정지를 판단하는 정확한 기준은 공개돼 있지 않으니 확실하게 막으려면 Pro 플랜을 쓰세요.
 
 ## 보안
 
